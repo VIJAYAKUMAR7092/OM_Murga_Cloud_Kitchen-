@@ -26,31 +26,10 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     
-    // Generate unique filename
-    const folder = (formData.get("folder") as string) || "foods";
-    const allowedFolders = ["foods", "branding"];
-    if (!allowedFolders.includes(folder)) {
-      return NextResponse.json({ error: "Invalid upload folder" }, { status: 400 });
-    }
+    // Generate base64 string
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    const ext = path.extname(file.name) || ".jpg";
-    const slug = file.name.replace(ext, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
-    const filename = `${slug}-${uniqueSuffix}${ext}`;
-    
-    const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
-    
-    // Ensure directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const fileUrl = `/uploads/${folder}/${filename}`;
-
-    return NextResponse.json({ url: fileUrl }, { status: 201 });
+    return NextResponse.json({ url: base64Image }, { status: 201 });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });

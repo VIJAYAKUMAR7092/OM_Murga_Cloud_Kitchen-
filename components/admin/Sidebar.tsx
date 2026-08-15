@@ -27,11 +27,11 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 const MENU_ITEMS = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
+  { name: "Enquiries", href: "/admin/enquiries", icon: MessageSquare },
   { name: "Food Menu", href: "/admin/foods", icon: UtensilsCrossed },
   { name: "Customers", href: "/admin/customers", icon: Users },
   { name: "Reviews", href: "/admin/reviews", icon: Star },
   { name: "Coupons", href: "/admin/coupons", icon: Ticket },
-  { name: "Enquiries", href: "/admin/enquiries", icon: MessageSquare },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
