@@ -6,18 +6,11 @@ import { RestaurantSettingsInput } from "@/lib/validations/settings";
  * Returns the default record if it doesn't exist.
  */
 export async function getRestaurantSettings() {
-  const settings = await prisma.restaurantSettings.findUnique({
+  return await prisma.restaurantSettings.upsert({
     where: { id: "singleton" },
+    update: {},
+    create: { id: "singleton" },
   });
-
-  if (!settings) {
-    // If somehow deleted, recreate defaults
-    return await prisma.restaurantSettings.create({
-      data: { id: "singleton" },
-    });
-  }
-
-  return settings;
 }
 
 /**
