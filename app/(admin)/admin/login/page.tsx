@@ -1,9 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
-
 import { getRestaurantSettings } from "@/server/queries/settings";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 
