@@ -1,0 +1,22 @@
+﻿
+model Review {
+  id            String   @id @default(cuid())
+  rating        Int
+  review        String?
+  customerName  String
+  customerPhone String
+  foodId        String
+  orderId       String   @unique
+  isApproved    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  food          Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([foodId])
+  @@index([orderId])
+  @@index([isApproved])
+  @@index([createdAt])
+}
+

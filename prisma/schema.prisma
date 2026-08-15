@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Food {
+  id           String      @id @default(cuid())
+  name         String
+  slug         String      @unique
+  description  String
+  price        Float
+  category     String
+  isVegetarian Boolean     @default(false)
+  isAvailable  Boolean     @default(true)
+  isDeleted    Boolean     @default(false)
+  isSystem     Boolean     @default(false)
+  image        String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+  reviews      Review[]
+}
+
+model Order {
+  id               String        @id @default(cuid())
+  orderNumber      String        @unique
+  trackingId       String        @unique
+  customerName     String
+  phone            String
+  email            String?
+  whatsapp         String?
+  houseNumber      String
+  landmark         String?
+  formattedAddress String
+  area             String?
+  pincode          String?
+  latitude         Float?
+  longitude        Float?
+  subtotal         Float
+  deliveryFee      Float
+  tax              Float
+  originalAmount   Float?        // The total before any discount
+  discountAmount   Float         @default(0)
+  couponCode       String?
+  finalAmount      Float?        // Same as total, but explicit
+  total            Float
+  paymentMethod    PaymentMethod
+  paymentStatus    PaymentStatus @default(PENDING)
+  orderStatus      OrderStatus   @default(PENDING)
+  estimatedDeliveryTime Int?     // ETA in minutes from accepted time
+  estimatedDelivery DateTime?
+  isRead           Boolean       @default(false)
+  razorpayOrderId  String?
+  razorpayPaymentId String?      @unique
+  razorpaySignature String?
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  orderItems       OrderItem[]
+  review           Review?
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  foodId   String
+  foodName String
+  price    Float
+  quantity Int
+  subtotal Float
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  food     Food   @relation(fields: [foodId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([foodId])
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum PaymentMethod {
+  COD
+  ONLINE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model RestaurantSettings {
+  id              String   @id @default("singleton")
+  restaurantName  String   @default("Om Murga Cloud Kitchen")
+  tagline         String   @default("Premium Food Delivery")
+  description     String   @default("Experience the luxury of authentic taste delivered to your doorstep in Coimbatore.")
+  
+  // Contact
+  phone           String   @default("9092077915")
+  whatsapp        String   @default("9092077915")
+  email           String   @default("contact@ommurga.com")
+  
+  // Address
+  address         String   @default("9, Annamalai Residency, Krishna Garden, Kalapatti Road, Veeriyampalayam, Coimbatore - 641048")
+  googleMapsUrl   String   @default("https://maps.google.com")
+  latitude        Float    @default(11.0500)
+  longitude       Float    @default(77.0279)
+  
+  // Business
+  openingTime     String   @default("06:30")
+  closingTime     String   @default("21:00")
+  isOpen          Boolean  @default(true)
+  
+  // Delivery
+  deliveryRadius  Float    @default(7.0)
+  deliveryCharge  Float    @default(50.0)
+  minimumOrder    Float    @default(0.0)
+  
+  // Social
+  facebook        String   @default("")
+  instagram       String   @default("")
+  youtube         String   @default("")
+  
+  // Branding
+  logo            String   @default("/images/brand/official-logo.jpg")
+  favicon         String   @default("/favicon.ico")
+  heroBanner      String   @default("/images/hero-bg.webp")
+  aboutImage      String   @default("/images/brand/murugan-vel.jpg")
+  contactImage    String   @default("/images/contact-bg.webp")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum EnquiryStatus {
+  NEW
+  READ
+  REPLIED
+  CLOSED
+}
+
+model CustomerEnquiry {
+  id        String        @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  subject   String
+  message   String
+  status    EnquiryStatus @default(NEW)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime      @default(now())
+}
+
+enum NotificationType {
+  NEW_ORDER
+  ORDER_CANCELLED
+  NEW_ENQUIRY
+  LOW_STOCK
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  title          String
+  message        String
+  type           NotificationType
+  isRead         Boolean          @default(false)
+  relatedOrderId String?
+  createdAt      DateTime         @default(now())
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  rating        Int
+  review        String?
+  customerName  String
+  customerPhone String
+  foodId        String
+  orderId       String   @unique
+  isApproved    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  food          Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([foodId])
+  @@index([orderId])
+  @@index([isApproved])
+  @@index([createdAt])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id                 String       @id @default(cuid())
+  code               String       @unique
+  title              String
+  description        String?
+  discountType       DiscountType
+  discountValue      Float
+  minimumOrderAmount Float        @default(0)
+  maximumDiscount    Float?
+  usageLimit         Int?
+  usedCount          Int          @default(0)
+  startsAt           DateTime?
+  expiresAt          DateTime?
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([code])
+}

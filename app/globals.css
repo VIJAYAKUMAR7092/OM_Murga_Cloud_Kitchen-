@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FAFAFA;
+    --foreground: #121212;
+    
+    --primary: #D4AF37;
+    --primary-foreground: #121212;
+    
+    --secondary: #064E3B;
+    --secondary-foreground: #FAFAFA;
+    
+    --card: #FFFFFF;
+    --card-foreground: #121212;
+    
+    --muted: #E5E5E5;
+    --muted-foreground: #737373;
+    
+    --border: #E5E5E5;
+    --input: #E5E5E5;
+    --ring: #D4AF37;
+  }
+
+  .dark {
+    --background: #0A0A0A;
+    --foreground: #FAFAFA;
+    
+    --primary: #D4AF37;
+    --primary-foreground: #121212;
+    
+    --secondary: #064E3B;
+    --secondary-foreground: #FAFAFA;
+    
+    --card: #121212;
+    --card-foreground: #FAFAFA;
+    
+    --muted: #262626;
+    --muted-foreground: #A3A3A3;
+    
+    --border: #262626;
+    --input: #262626;
+    --ring: #D4AF37;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-gold-500 selection:text-black;
+  }
+}
+
+@layer components {
+  /* ==================== BUTTON VARIANTS ==================== */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ring-offset-background active:scale-[0.98];
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-gold-400 shadow-luxury hover:shadow-glow;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-emerald-800 shadow-card;
+  }
+  
+  .btn-outline {
+    @apply border border-primary text-primary hover:bg-gold-500/10;
+  }
+  
+  .btn-ghost {
+    @apply hover:bg-muted hover:text-foreground text-muted-foreground;
+  }
+
+  /* ==================== INPUT STYLES ==================== */
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+  }
+
+  /* ==================== CARD STYLES ==================== */
+  .card {
+    @apply rounded-xl border border-border bg-card text-card-foreground shadow-card transition-all duration-300;
+  }
+  
+  .card-luxury {
+    @apply card hover:border-gold-500/50 hover:shadow-luxury;
+  }
+
+  /* ==================== BADGE STYLES ==================== */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .badge-gold {
+    @apply bg-gold-500/15 text-gold-600 dark:text-gold-400 border border-gold-500/30;
+  }
+  
+  .badge-green {
+    @apply bg-emerald-900/15 text-emerald-600 dark:text-emerald-400 border border-emerald-900/30;
+  }
+
+  /* ==================== ALERT STYLES ==================== */
+  .alert {
+    @apply relative w-full rounded-lg border p-4 flex items-start gap-3;
+  }
+  
+  .alert-warning {
+    @apply border-gold-500/50 bg-gold-500/10 text-gold-700 dark:text-gold-400;
+  }
+  
+  .alert-success {
+    @apply border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400;
+  }
+
+  /* ==================== LOADING SKELETON ==================== */
+  .skeleton {
+    @apply animate-pulse rounded-md bg-muted overflow-hidden relative;
+  }
+  
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent;
+    content: '';
+  }
+}
