@@ -18,18 +18,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // Fetch foods for dynamic routes
-  const foods = await prisma.food.findMany({
-    where: { isAvailable: true, isDeleted: false },
-    select: { id: true, updatedAt: true }
-  });
+  let dynamicRoutes: MetadataRoute.Sitemap = [];
+  try {
+    // Fetch foods for dynamic routes
+    const foods = await prisma.food.findMany({
+      where: { isAvailable: true, isDeleted: false },
+      select: { id: true, updatedAt: true }
+    });
 
-  const dynamicRoutes = foods.map((food) => ({
-    url: `${baseUrl}/menu#${food.id}`, // Anchor link since we don't have separate food detail pages right now
-    lastModified: food.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }));
+    dynamicRoutes = foods.map((food) => ({
+      url: `${baseUrl}/menu#${food.id}`, // Anchor link since we don't have separate food detail pages right now
+      lastModified: food.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }));
+  } catch (error) {
+    console.error("Prisma error in sitemap, defaulting to static routes:", error);
+  }
 
   return [...staticRoutes, ...dynamicRoutes];
 }
