@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "@/lib/auth";
 
 const MENU_ITEMS = [
   // LUNCH
@@ -38,8 +38,7 @@ export async function GET() {
     });
 
     if (!existingAdmin) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(plainPassword, salt);
+      const passwordHash = await hashPassword(plainPassword);
       await prisma.admin.create({
         data: { email, passwordHash },
       });
